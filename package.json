@@ -2,7 +2,7 @@
   "name": "eft-countdown-landing",
   "version": "0.1.0",
   "private": true,
- "scripts": {
+  "scripts": {
     "dev": "next dev",
     "build": "next build",
     "postinstall": "prisma generate",
@@ -10,6 +10,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@prisma/adapter-neon": "^7.7.0",
     "@prisma/client": "6",
     "next": "16.1.1",
     "prisma": "6",
