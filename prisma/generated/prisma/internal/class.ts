@@ -11,66 +11,49 @@
  * Please import the `PrismaClient` class from the `client.ts` file instead.
  */
 
-import * as runtime from "@prisma/client/runtime/library"
+import * as runtime from "@prisma/client/runtime/client"
 import type * as Prisma from "./prismaNamespace"
 
 
 const config: runtime.GetPrismaClientConfig = {
-  "generator": {
-    "name": "client",
-    "provider": {
-      "fromEnvVar": null,
-      "value": "prisma-client"
-    },
-    "output": {
-      "value": "/home/anshjz/Documents/task2025/eft-countdown-landing/prisma/generated/prisma",
-      "fromEnvVar": null
-    },
-    "config": {
-      "engineType": "library"
-    },
-    "binaryTargets": [
-      {
-        "fromEnvVar": null,
-        "value": "rhel-openssl-3.0.x",
-        "native": true
-      }
-    ],
-    "previewFeatures": [],
-    "sourceFilePath": "/home/anshjz/Documents/task2025/eft-countdown-landing/prisma/schema.prisma",
-    "isCustomOutput": true
-  },
-  "relativePath": "../..",
-  "clientVersion": "6.19.3",
-  "engineVersion": "c2990dca591cba766e3b7ef5d9e8a84796e47ab7",
-  "datasourceNames": [
-    "db"
-  ],
+  "previewFeatures": [],
+  "clientVersion": "7.7.0",
+  "engineVersion": "75cbdc1eb7150937890ad5465d861175c6624711",
   "activeProvider": "postgresql",
-  "postinstall": false,
-  "inlineDatasources": {
-    "db": {
-      "url": {
-        "fromEnvVar": "DATABASE_URL",
-        "value": null
-      }
-    }
-  },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client\"\n  output   = \"./generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Coupon {\n  id            String    @id @default(uuid())\n  code          String    @unique\n  discountType  String // \"PERCENT\"\n  discountValue Float // 50\n  maxUses       Int\n  usedCount     Int       @default(0)\n  isActive      Boolean   @default(true)\n  expiresAt     DateTime?\n  createdAt     DateTime  @default(now())\n}\n\nmodel CouponUsage {\n  id       String   @id @default(uuid())\n  couponId String\n  userId   String\n  usedAt   DateTime @default(now())\n\n  @@unique([couponId, userId])\n}\n\nmodel Waitlist {\n  id           String   @id @default(cuid())\n  email        String   @unique\n  name         String?\n  source       String? // landing page, campaign, etc.\n  isApproved   Boolean  @default(false)\n  isRegistered Boolean  @default(false) // becomes true after full signup\n  createdAt    DateTime @default(now())\n}\n",
-  "inlineSchemaHash": "b18c355ece927082503168ff01ca0ca4af67072d8525eb417da7f3b07f346a7b",
-  "copyEngine": true,
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client\"\n  output   = \"./generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel Coupon {\n  id            String    @id @default(uuid())\n  code          String    @unique\n  discountType  String // \"PERCENT\"\n  discountValue Float // 50\n  maxUses       Int\n  usedCount     Int       @default(0)\n  isActive      Boolean   @default(true)\n  expiresAt     DateTime?\n  createdAt     DateTime  @default(now())\n}\n\nmodel CouponUsage {\n  id       String   @id @default(uuid())\n  couponId String\n  userId   String\n  usedAt   DateTime @default(now())\n\n  @@unique([couponId, userId])\n}\n\nmodel Waitlist {\n  id           String   @id @default(cuid())\n  email        String   @unique\n  name         String?\n  source       String? // landing page, campaign, etc.\n  isApproved   Boolean  @default(false)\n  isRegistered Boolean  @default(false) // becomes true after full signup\n  createdAt    DateTime @default(now())\n}\n",
   "runtimeDataModel": {
     "models": {},
     "enums": {},
     "types": {}
   },
-  "dirname": ""
+  "parameterizationSchema": {
+    "strings": [],
+    "graph": ""
+  }
 }
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"Coupon\":{\"dbName\":null,\"schema\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"String\",\"nativeType\":null,\"default\":{\"name\":\"uuid\",\"args\":[4]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"code\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":true,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"discountType\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"discountValue\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Float\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"maxUses\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Int\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"usedCount\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"Int\",\"nativeType\":null,\"default\":0,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"isActive\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"Boolean\",\"nativeType\":null,\"default\":true,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":false,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"DateTime\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DateTime\",\"nativeType\":null,\"default\":{\"name\":\"now\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false},\"CouponUsage\":{\"dbName\":null,\"schema\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"String\",\"nativeType\":null,\"default\":{\"name\":\"uuid\",\"args\":[4]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"couponId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"userId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"usedAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DateTime\",\"nativeType\":null,\"default\":{\"name\":\"now\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueFields\":[[\"couponId\",\"userId\"]],\"uniqueIndexes\":[{\"name\":null,\"fields\":[\"couponId\",\"userId\"]}],\"isGenerated\":false},\"Waitlist\":{\"dbName\":null,\"schema\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"String\",\"nativeType\":null,\"default\":{\"name\":\"cuid\",\"args\":[1]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"email\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":true,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"name\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":false,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"source\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":false,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"isApproved\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"Boolean\",\"nativeType\":null,\"default\":false,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"isRegistered\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"Boolean\",\"nativeType\":null,\"default\":false,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DateTime\",\"nativeType\":null,\"default\":{\"name\":\"now\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false}},\"enums\":{},\"types\":{}}")
-config.engineWasm = undefined
-config.compilerWasm = undefined
+config.runtimeDataModel = JSON.parse("{\"models\":{\"Coupon\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"code\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"discountType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"discountValue\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"maxUses\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"usedCount\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"isActive\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"CouponUsage\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"couponId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"usedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Waitlist\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"source\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isApproved\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"isRegistered\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.parameterizationSchema = {
+  strings: JSON.parse("[\"where\",\"Coupon.findUnique\",\"Coupon.findUniqueOrThrow\",\"orderBy\",\"cursor\",\"Coupon.findFirst\",\"Coupon.findFirstOrThrow\",\"Coupon.findMany\",\"data\",\"Coupon.createOne\",\"Coupon.createMany\",\"Coupon.createManyAndReturn\",\"Coupon.updateOne\",\"Coupon.updateMany\",\"Coupon.updateManyAndReturn\",\"create\",\"update\",\"Coupon.upsertOne\",\"Coupon.deleteOne\",\"Coupon.deleteMany\",\"having\",\"_count\",\"_avg\",\"_sum\",\"_min\",\"_max\",\"Coupon.groupBy\",\"Coupon.aggregate\",\"CouponUsage.findUnique\",\"CouponUsage.findUniqueOrThrow\",\"CouponUsage.findFirst\",\"CouponUsage.findFirstOrThrow\",\"CouponUsage.findMany\",\"CouponUsage.createOne\",\"CouponUsage.createMany\",\"CouponUsage.createManyAndReturn\",\"CouponUsage.updateOne\",\"CouponUsage.updateMany\",\"CouponUsage.updateManyAndReturn\",\"CouponUsage.upsertOne\",\"CouponUsage.deleteOne\",\"CouponUsage.deleteMany\",\"CouponUsage.groupBy\",\"CouponUsage.aggregate\",\"Waitlist.findUnique\",\"Waitlist.findUniqueOrThrow\",\"Waitlist.findFirst\",\"Waitlist.findFirstOrThrow\",\"Waitlist.findMany\",\"Waitlist.createOne\",\"Waitlist.createMany\",\"Waitlist.createManyAndReturn\",\"Waitlist.updateOne\",\"Waitlist.updateMany\",\"Waitlist.updateManyAndReturn\",\"Waitlist.upsertOne\",\"Waitlist.deleteOne\",\"Waitlist.deleteMany\",\"Waitlist.groupBy\",\"Waitlist.aggregate\",\"AND\",\"OR\",\"NOT\",\"id\",\"email\",\"name\",\"source\",\"isApproved\",\"isRegistered\",\"createdAt\",\"equals\",\"in\",\"notIn\",\"lt\",\"lte\",\"gt\",\"gte\",\"not\",\"contains\",\"startsWith\",\"endsWith\",\"couponId\",\"userId\",\"usedAt\",\"couponId_userId\",\"code\",\"discountType\",\"discountValue\",\"maxUses\",\"usedCount\",\"isActive\",\"expiresAt\",\"set\",\"increment\",\"decrement\",\"multiply\",\"divide\"]"),
+  graph: "ggEbMAw8AABsADA9AAAEABA-AABsADA_AQAAAAFFQABfACFVAQAAAAFWAQBcACFXCABtACFYAgBuACFZAgBuACFaIABeACFbQABvACEBAAAAAQAgAQAAAAEAIAw8AABsADA9AAAEABA-AABsADA_AQBcACFFQABfACFVAQBcACFWAQBcACFXCABtACFYAgBuACFZAgBuACFaIABeACFbQABvACEBWwAAcAAgAwAAAAQAIAMAAAUAMAQAAAEAIAMAAAAEACADAAAFADAEAAABACADAAAABAAgAwAABQAwBAAAAQAgCT8BAAAAAUVAAAAAAVUBAAAAAVYBAAAAAVcIAAAAAVgCAAAAAVkCAAAAAVogAAAAAVtAAAAAAQEIAAAJACAJPwEAAAABRUAAAAABVQEAAAABVgEAAAABVwgAAAABWAIAAAABWQIAAAABWiAAAAABW0AAAAABAQgAAAsAMAEIAAALADAJPwEAdAAhRUAAdwAhVQEAdAAhVgEAdAAhVwgAgAEAIVgCAIEBACFZAgCBAQAhWiAAdgAhW0AAggEAIQIAAAABACAIAAAOACAJPwEAdAAhRUAAdwAhVQEAdAAhVgEAdAAhVwgAgAEAIVgCAIEBACFZAgCBAQAhWiAAdgAhW0AAggEAIQIAAAAEACAIAAAQACACAAAABAAgCAAAEAAgAwAAAAEAIA8AAAkAIBAAAA4AIAEAAAABACABAAAABAAgBhUAAHsAIBYAAHwAIBcAAH8AIBgAAH4AIBkAAH0AIFsAAHAAIAw8AABjADA9AAAXABA-AABjADA_AQBNACFFQABQACFVAQBNACFWAQBNACFXCABkACFYAgBlACFZAgBlACFaIABPACFbQABmACEDAAAABAAgAwAAFgAwFAAAFwAgAwAAAAQAIAMAAAUAMAQAAAEAIAg8AABhADA9AAAdABA-AABhADA_AQAAAAFRAQBcACFSAQBcACFTQABfACFUAABiACABAAAAGgAgAQAAABoAIAc8AABhADA9AAAdABA-AABhADA_AQBcACFRAQBcACFSAQBcACFTQABfACEAAwAAAB0AIAMAAB4AMAQAABoAIAMAAAAdACADAAAeADAEAAAaACADAAAAHQAgAwAAHgAwBAAAGgAgBD8BAAAAAVEBAAAAAVIBAAAAAVNAAAAAAQEIAAAiACAEPwEAAAABUQEAAAABUgEAAAABU0AAAAABAQgAACQAMAEIAAAkADAEPwEAdAAhUQEAdAAhUgEAdAAhU0AAdwAhAgAAABoAIAgAACcAIAQ_AQB0ACFRAQB0ACFSAQB0ACFTQAB3ACECAAAAHQAgCAAAKQAgAgAAAB0AIAgAACkAIAMAAAAaACAPAAAiACAQAAAnACABAAAAGgAgAQAAAB0AIAMVAAB4ACAYAAB6ACAZAAB5ACAHPAAAYAAwPQAAMAAQPgAAYAAwPwEATQAhUQEATQAhUgEATQAhU0AAUAAhAwAAAB0AIAMAAC8AMBQAADAAIAMAAAAdACADAAAeADAEAAAaACAKPAAAWwAwPQAANgAQPgAAWwAwPwEAAAABQAEAAAABQQEAXQAhQgEAXQAhQyAAXgAhRCAAXgAhRUAAXwAhAQAAADMAIAEAAAAzACAKPAAAWwAwPQAANgAQPgAAWwAwPwEAXAAhQAEAXAAhQQEAXQAhQgEAXQAhQyAAXgAhRCAAXgAhRUAAXwAhAkEAAHAAIEIAAHAAIAMAAAA2ACADAAA3ADAEAAAzACADAAAANgAgAwAANwAwBAAAMwAgAwAAADYAIAMAADcAMAQAADMAIAc_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-AjM_FTRBFDVDAjZEFjdFFDhGFDlHAjpKFztLGw"
+}
 
+async function decodeBase64AsWasm(wasmBase64: string): Promise<WebAssembly.Module> {
+  const { Buffer } = await import('node:buffer')
+  const wasmArray = Buffer.from(wasmBase64, 'base64')
+  return new WebAssembly.Module(wasmArray)
+}
+
+config.compilerWasm = {
+  getRuntime: async () => await import("@prisma/client/runtime/query_compiler_fast_bg.postgresql.mjs"),
+
+  getQueryCompilerWasmModule: async () => {
+    const { wasm } = await import("@prisma/client/runtime/query_compiler_fast_bg.postgresql.wasm-base64.mjs")
+    return await decodeBase64AsWasm(wasm)
+  },
+
+  importName: "./query_compiler_fast_bg.js"
+}
 
 
 
@@ -84,12 +67,14 @@ export interface PrismaClientConstructor {
    * Type-safe database client for TypeScript
    * @example
    * ```
-   * const prisma = new PrismaClient()
+   * const prisma = new PrismaClient({
+   *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
+   * })
    * // Fetch zero or more Coupons
    * const coupons = await prisma.coupon.findMany()
    * ```
    * 
-   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client).
+   * Read more in our [docs](https://pris.ly/d/client).
    */
 
   new <
@@ -97,7 +82,7 @@ export interface PrismaClientConstructor {
     LogOpts extends LogOptions<Options> = LogOptions<Options>,
     OmitOpts extends Prisma.PrismaClientOptions['omit'] = Options extends { omit: infer U } ? U : Prisma.PrismaClientOptions['omit'],
     ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs
-  >(options?: Prisma.Subset<Options, Prisma.PrismaClientOptions> ): PrismaClient<LogOpts, OmitOpts, ExtArgs>
+  >(options: Prisma.Subset<Options, Prisma.PrismaClientOptions> ): PrismaClient<LogOpts, OmitOpts, ExtArgs>
 }
 
 /**
@@ -106,17 +91,19 @@ export interface PrismaClientConstructor {
  * Type-safe database client for TypeScript
  * @example
  * ```
- * const prisma = new PrismaClient()
+ * const prisma = new PrismaClient({
+ *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
+ * })
  * // Fetch zero or more Coupons
  * const coupons = await prisma.coupon.findMany()
  * ```
  * 
- * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client).
+ * Read more in our [docs](https://pris.ly/d/client).
  */
 
 export interface PrismaClient<
   in LogOpts extends Prisma.LogLevel = never,
-  in out OmitOpts extends Prisma.PrismaClientOptions['omit'] = Prisma.PrismaClientOptions['omit'],
+  in out OmitOpts extends Prisma.PrismaClientOptions['omit'] = undefined,
   in out ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs
 > {
   [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['other'] }
@@ -140,7 +127,7 @@ export interface PrismaClient<
    * const result = await prisma.$executeRaw`UPDATE User SET cool = ${true} WHERE email = ${'user@email.com'};`
    * ```
    *
-   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
+   * Read more in our [docs](https://pris.ly/d/raw-queries).
    */
   $executeRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): Prisma.PrismaPromise<number>;
 
@@ -152,7 +139,7 @@ export interface PrismaClient<
    * const result = await prisma.$executeRawUnsafe('UPDATE User SET cool = $1 WHERE email = $2 ;', true, 'user@email.com')
    * ```
    *
-   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
+   * Read more in our [docs](https://pris.ly/d/raw-queries).
    */
   $executeRawUnsafe<T = unknown>(query: string, ...values: any[]): Prisma.PrismaPromise<number>;
 
@@ -163,7 +150,7 @@ export interface PrismaClient<
    * const result = await prisma.$queryRaw`SELECT * FROM User WHERE id = ${1} OR email = ${'user@email.com'};`
    * ```
    *
-   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
+   * Read more in our [docs](https://pris.ly/d/raw-queries).
    */
   $queryRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): Prisma.PrismaPromise<T>;
 
@@ -175,7 +162,7 @@ export interface PrismaClient<
    * const result = await prisma.$queryRawUnsafe('SELECT * FROM User WHERE id = $1 OR email = $2;', 1, 'user@email.com')
    * ```
    *
-   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
+   * Read more in our [docs](https://pris.ly/d/raw-queries).
    */
   $queryRawUnsafe<T = unknown>(query: string, ...values: any[]): Prisma.PrismaPromise<T>;
 
@@ -191,12 +178,11 @@ export interface PrismaClient<
    * ])
    * ```
    * 
-   * Read more in our [docs](https://www.prisma.io/docs/concepts/components/prisma-client/transactions).
+   * Read more in our [docs](https://www.prisma.io/docs/orm/prisma-client/queries/transactions).
    */
   $transaction<P extends Prisma.PrismaPromise<any>[]>(arg: [...P], options?: { isolationLevel?: Prisma.TransactionIsolationLevel }): runtime.Types.Utils.JsPromise<runtime.Types.Utils.UnwrapTuple<P>>
 
   $transaction<R>(fn: (prisma: Omit<PrismaClient, runtime.ITXClientDenyList>) => runtime.Types.Utils.JsPromise<R>, options?: { maxWait?: number, timeout?: number, isolationLevel?: Prisma.TransactionIsolationLevel }): runtime.Types.Utils.JsPromise<R>
-
 
   $extends: runtime.Types.Extensions.ExtendsHook<"extends", Prisma.TypeMapCb<OmitOpts>, ExtArgs, runtime.Types.Utils.Call<Prisma.TypeMapCb<OmitOpts>, {
     extArgs: ExtArgs
@@ -233,7 +219,6 @@ export interface PrismaClient<
   get waitlist(): Prisma.WaitlistDelegate<ExtArgs, { omit: OmitOpts }>;
 }
 
-export function getPrismaClientClass(dirname: string): PrismaClientConstructor {
-  config.dirname = dirname
+export function getPrismaClientClass(): PrismaClientConstructor {
   return runtime.getPrismaClient(config) as unknown as PrismaClientConstructor
 }

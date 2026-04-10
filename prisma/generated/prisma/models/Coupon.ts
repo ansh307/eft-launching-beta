@@ -8,7 +8,7 @@
  *
  * 🟢 You can import this file directly.
  */
-import type * as runtime from "@prisma/client/runtime/library"
+import type * as runtime from "@prisma/client/runtime/client"
 import type * as $Enums from "../enums"
 import type * as Prisma from "../internal/prismaNamespace"
 
@@ -228,7 +228,7 @@ export type CouponGroupByOutputType = {
   _max: CouponMaxAggregateOutputType | null
 }
 
-type GetCouponGroupByPayload<T extends CouponGroupByArgs> = Prisma.PrismaPromise<
+export type GetCouponGroupByPayload<T extends CouponGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<CouponGroupByOutputType, T['by']> &
       {
@@ -1154,6 +1154,11 @@ export type CouponFindManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Skip the first `n` Coupons.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of Coupons.
+   */
   distinct?: Prisma.CouponScalarFieldEnum | Prisma.CouponScalarFieldEnum[]
 }
 
