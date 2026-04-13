@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-
-/* ================= TYPES ================= */
+import { useEffect, useState, useMemo, useRef } from "react";
 
 type User = {
   email: string;
@@ -12,45 +10,46 @@ type User = {
   action: string;
 };
 
-/* ================= CONSTANTS ================= */
-
 const ACTIONS = ["joined", "started trial", "signed up", "just subscribed"];
 
-// ✅ MUST match User type
-const RECENT_SIGNUPS: User[] = [
+// ✅ No Date.now() at module scope — use offsets, resolve on client only
+const RECENT_SIGNUP_OFFSETS = [
   {
     email: "alex@example.com",
     name: "Alex",
     country: "US",
-    time: Date.now() - 1000 * 60 * 2,
+    offsetMs: 1000 * 60 * 2,
     action: "joined",
   },
   {
     email: "emma@example.com",
     name: "Emma",
     country: "UK",
-    time: Date.now() - 1000 * 60 * 5,
+    offsetMs: 1000 * 60 * 5,
     action: "started trial",
   },
 ];
 
-/* ================= HELPERS ================= */
+const getRecentSignups = (): User[] =>
+  RECENT_SIGNUP_OFFSETS.map((u) => ({
+    email: u.email,
+    name: u.name,
+    country: u.country,
+    action: u.action,
+    time: Date.now() - u.offsetMs,
+  }));
 
-const getFlagEmoji = (countryCode: string) => {
-  return countryCode
+const getFlagEmoji = (countryCode: string) =>
+  countryCode
     .toUpperCase()
     .replace(/./g, (char) => String.fromCodePoint(127397 + char.charCodeAt(0)));
-};
 
 const getTimeAgo = (timestamp: number, now: number) => {
+  if (now === 0) return "just now"; // ✅ SSR-safe fallback
   const diffSec = Math.floor((now - timestamp) / 1000);
-
   if (diffSec < 60) return "just now";
-  const diffMin = Math.floor(diffSec / 60);
-  if (diffMin < 60) return `${diffMin} min ago`;
-
-  const diffHour = Math.floor(diffMin / 60);
-  return `${diffHour} hr ago`;
+  if (diffSec < 3600) return `${Math.floor(diffSec / 60)} min ago`;
+  return `${Math.floor(diffSec / 3600)} hr ago`;
 };
 
 const formatName = (email: string) => {
@@ -62,35 +61,33 @@ const formatName = (email: string) => {
     .join(" ");
 };
 
-/* ================= COMPONENT ================= */
-
 const LiveSignupTicker = () => {
+  // ✅ Start with empty arrays — populated after mount to avoid SSR mismatch
   const [data, setData] = useState<User[]>([]);
-  const [now, setNow] = useState(Date.now());
+  const [displayList, setDisplayList] = useState<User[]>([]);
+  // ✅ now = 0 on server, real value set in useEffect after hydration
+  const [now, setNow] = useState(0);
+  const displayListRef = useRef<User[]>([]);
 
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const lastFetchRef = useRef(0);
-
-  /* ⏱ update time */
+  // ✅ Populate initial data and now only on the client
   useEffect(() => {
-    const interval = setInterval(() => {
-      setNow(Date.now());
-    }, 10000);
+    const initial = getRecentSignups();
+    setData(initial);
+    setDisplayList(initial);
+    displayListRef.current = initial;
+    setNow(Date.now());
+  }, []);
 
+  // ✅ Clock tick — client only
+  useEffect(() => {
+    const interval = setInterval(() => setNow(Date.now()), 10000);
     return () => clearInterval(interval);
   }, []);
 
-  /* 🚀 fetch users */
   const fetchUsers = async () => {
-    const nowTime = Date.now();
-
-    if (nowTime - lastFetchRef.current < 10000) return;
-    lastFetchRef.current = nowTime;
-
     try {
       const res = await fetch("/api/waitlist");
       const users: { email: string; createdAt: string }[] = await res.json();
-
       const formatted: User[] = users.map((u) => ({
         email: u.email,
         name: formatName(u.email),
@@ -98,103 +95,72 @@ const LiveSignupTicker = () => {
         time: new Date(u.createdAt).getTime(),
         action: ACTIONS[Math.floor(Math.random() * ACTIONS.length)],
       }));
-
-      setData((prev: User[]) => {
-        const existingEmails = new Set(prev.map((u) => u.email));
-
-        const newUsers: User[] = formatted.filter(
-          (u) => !existingEmails.has(u.email),
-        );
-
-        const merged: User[] = [...newUsers, ...prev, ...RECENT_SIGNUPS];
-
-        return [...merged.slice(0, 30), ...merged.slice(0, 30)];
-      });
+      const recentSignups = getRecentSignups(); // ✅ fresh timestamps on client
+      const merged = [...formatted, ...recentSignups].slice(0, 30);
+      setData(merged);
+      setDisplayList(merged);
+      displayListRef.current = merged;
     } catch (err) {
       console.error(err);
     }
   };
 
-  /* 🧠 smart polling */
   useEffect(() => {
     fetchUsers();
-
-    let interval = 5000;
-
-    const startPolling = () => {
-      intervalRef.current = setInterval(() => {
-        fetchUsers();
-
-        interval = Math.min(interval + 5000, 30000);
-
-        if (intervalRef.current) clearInterval(intervalRef.current);
-        startPolling();
-      }, interval);
-    };
-
-    startPolling();
-
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
   }, []);
 
-  /* ⚡ simulate activity */
   useEffect(() => {
-    const interval = setInterval(() => {
-      setData((prev: User[]) => {
-        if (prev.length === 0) return prev;
-
-        const randomUser = prev[Math.floor(Math.random() * prev.length)];
-
-        const newEntry: User = {
-          ...randomUser,
-          time: Date.now(),
-          action: ACTIONS[Math.floor(Math.random() * ACTIONS.length)],
-        };
-
-        const updated: User[] = [newEntry, ...prev];
-
-        return [...updated.slice(0, 30), ...updated.slice(0, 30)];
-      });
-    }, 8000);
-
+    const interval = setInterval(fetchUsers, 120000);
     return () => clearInterval(interval);
   }, []);
 
-  /* 🛑 pause when tab inactive */
   useEffect(() => {
-    const handleVisibility = () => {
-      if (document.hidden) {
-        if (intervalRef.current) clearInterval(intervalRef.current);
-      } else {
-        fetchUsers();
-      }
+    let timeout: ReturnType<typeof setTimeout>;
+    const simulate = () => {
+      timeout = setTimeout(
+        () => {
+          setData((prev) => {
+            if (prev.length === 0) return prev;
+            const randomUser = prev[Math.floor(Math.random() * prev.length)];
+            const newEntry: User = {
+              ...randomUser,
+              time: Date.now() - Math.random() * 60000,
+              action: ACTIONS[Math.floor(Math.random() * ACTIONS.length)],
+            };
+            return [newEntry, ...prev].slice(0, 30);
+          });
+          simulate();
+        },
+        5000 + Math.random() * 7000,
+      );
     };
-
-    document.addEventListener("visibilitychange", handleVisibility);
-
-    return () =>
-      document.removeEventListener("visibilitychange", handleVisibility);
+    simulate();
+    return () => clearTimeout(timeout);
   }, []);
+
+  const tickerItems = useMemo(
+    () => [...displayList, ...displayList],
+    [displayList],
+  );
 
   return (
     <div className="w-full overflow-hidden py-3 bg-black/60 border-y border-green-500/20 backdrop-blur-xl">
       <div className="ticker">
-        <div className="ticker-track">
-          {data.map((user, index) => (
-            <div key={index} className="ticker-item group">
+        <div className="ticker-track" key="ticker-track">
+          {tickerItems.map((user, index) => (
+            <div key={`${user.email}-${index}`} className="ticker-item group">
               <span className="text-lg opacity-90">
                 {getFlagEmoji(user.country)}
               </span>
-
               <span className="text-white font-medium group-hover:text-green-400 transition">
                 {user.name}
               </span>
-
               <span className="text-green-400/90">{user.action}</span>
-
-              <span className="text-gray-400 text-xs opacity-80">
+              {/* ✅ suppressHydrationWarning as safety net for time spans */}
+              <span
+                className="text-gray-400 text-xs opacity-80"
+                suppressHydrationWarning
+              >
                 • {getTimeAgo(user.time, now)}
               </span>
             </div>
@@ -218,8 +184,10 @@ const LiveSignupTicker = () => {
         .ticker-track {
           display: flex;
           width: max-content;
-          animation: scroll 90s linear infinite;
+          animation: scroll 80s linear infinite;
           will-change: transform;
+          transform: translate3d(0, 0, 0);
+          backface-visibility: hidden;
         }
 
         .ticker-item {
@@ -241,10 +209,10 @@ const LiveSignupTicker = () => {
 
         @keyframes scroll {
           0% {
-            transform: translateX(0);
+            transform: translate3d(0, 0, 0);
           }
           100% {
-            transform: translateX(-50%);
+            transform: translate3d(-50%, 0, 0);
           }
         }
       `}</style>
