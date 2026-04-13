@@ -39,7 +39,7 @@ export async function POST(req: Request) {
 
      // Send email
     await resend.emails.send({
-      from: "EFT <onboarding@resend.dev>", // change later
+      from: "EFT <onboarding@anshsoni55333.info>", // change later
       to: email,
       subject: "Welcome to the EFT",
       html: welcomeEmail(email),
