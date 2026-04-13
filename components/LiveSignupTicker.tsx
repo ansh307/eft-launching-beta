@@ -144,7 +144,7 @@ const LiveSignupTicker = () => {
   );
 
   return (
-    <div className="w-full overflow-hidden py-3 bg-black/60 border-y border-green-500/20 backdrop-blur-xl">
+    <div className="w-full overflow-hidden my-4 sm:my-0 py-3 bg-black/60 border-y border-green-500/20 backdrop-blur-xl">
       <div className="ticker">
         <div className="ticker-track" key="ticker-track">
           {tickerItems.map((user, index) => (

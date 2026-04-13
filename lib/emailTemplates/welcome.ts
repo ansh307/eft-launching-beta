@@ -62,7 +62,7 @@ export const welcomeEmail = (email: string) => {
             <!-- CTA -->
             <tr>
               <td align="center" style="padding-top:10px;">
-                <a href="https://yourdomain.com" 
+                <a href="https://eft-launching-beta.vercel.app/" target="_blank" rel="noopener noreferrer"
                   style="display:inline-block;padding:12px 24px;background:#00ff88;color:#000;text-decoration:none;border-radius:6px;font-weight:bold;font-size:14px;">
                   View Platform →
                 </a>
