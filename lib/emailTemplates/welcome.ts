@@ -83,7 +83,7 @@ export const welcomeEmail = (email: string) => {
                 You received this email because you signed up for the EFT waitlist.<br/><br/>
                 
                 If you didn't sign up, you can safely ignore this email.<br/>
-                <a href="#" style="color:#888;text-decoration:underline;">Unsubscribe</a>
+                <a href="https://yourdomain.com/unsubscribe?email={{email}}" style="color:#888;text-decoration:underline;">Unsubscribe</a>
               </td>
             </tr>
 

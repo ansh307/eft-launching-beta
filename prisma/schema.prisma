@@ -34,11 +34,20 @@ model CouponUsage {
 }
 
 model Waitlist {
-  id          String   @id @default(cuid())
-  email       String   @unique
-  name        String?
-  source      String?  // landing page, campaign, etc.
-  isApproved  Boolean  @default(false)
-  isRegistered Boolean @default(false) // becomes true after full signup
-  createdAt   DateTime @default(now())
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  source       String?
+  isApproved   Boolean  @default(false)
+  isRegistered Boolean  @default(false)
+  subscribed   Boolean  @default(true) // 👈 NEW
+  createdAt    DateTime @default(now())
+}
+
+model Newsletter {
+  id        String   @id @default(cuid())
+  subject   String
+  content   String   // HTML content
+  sentAt    DateTime?
+  createdAt DateTime @default(now())
 }
