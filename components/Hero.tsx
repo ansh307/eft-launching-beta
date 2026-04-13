@@ -24,12 +24,15 @@ import { toast } from "sonner";
 
 const Hero = () => {
   const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email) return;
+    if (!email || isLoading) return;
+
+    setIsLoading(true);
 
     try {
       const res = await fetch("/api/waitlist", {
@@ -55,6 +58,8 @@ const Hero = () => {
       }, 3000);
     } catch (err) {
       console.error(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -147,14 +152,21 @@ const Hero = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder={CTA_EMAIL_PLACEHOLDER}
                   required
-                  className="w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-3 sm:py-4 text-sm sm:text-base rounded-full bg-black/40 border border-green-500/40 text-white placeholder-gray-400 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/30 backdrop-blur-md"
+                  disabled={isLoading}
+                  className="w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-3 sm:py-4 text-sm sm:text-base rounded-full bg-black/40 border border-green-500/40 text-white placeholder-gray-400 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/30 backdrop-blur-md disabled:opacity-50 disabled:cursor-not-allowed"
                 />
               </div>
               <button
                 type="submit"
-                className="px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base bg-gradient-to-r from-green-500 to-green-600 text-black font-bold rounded-full hover:from-green-400 hover:to-green-500 transition-all duration-300 shadow-lg shadow-green-500/40 hover:shadow-green-500/60 hover:scale-105 flex items-center justify-center gap-2 whitespace-nowrap"
+                disabled={isLoading}
+                className="px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base bg-gradient-to-r from-green-500 to-green-600 text-black font-bold rounded-full hover:from-green-400 hover:to-green-500 transition-all duration-300 shadow-lg shadow-green-500/40 hover:shadow-green-500/60 hover:scale-105 flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {isSubmitted ? (
+                {isLoading ? (
+                  <>
+                    <span className="animate-spin h-4 w-4 border-2 border-black border-t-transparent rounded-full"></span>
+                    Submitting...
+                  </>
+                ) : isSubmitted ? (
                   <>
                     <BsCheckCircleFill className="text-base sm:text-lg" />
                     Subscribed!
