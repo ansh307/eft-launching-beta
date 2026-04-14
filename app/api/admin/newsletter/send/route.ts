@@ -2,12 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-// ⏱️ helper delay
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+import { emailQueue } from "@/lib/queue";
 
 export async function POST(req: Request) {
   try {
@@ -28,42 +23,20 @@ export async function POST(req: Request) {
       select: { email: true },
     });
 
-    const emails = subscribers.map((s) => s.email);
-
-    // 3. Send emails ONE BY ONE (rate-limit safe)
-    for (const email of emails) {
-      try {
-        await resend.emails.send({
-          from: "EFT <onboarding@anshsoni55333.info>",
-          to: email,
-          subject,
-          html: content.replace("{{email}}", email),
-          headers: {
-            "List-Unsubscribe": `<https://yourdomain.com/unsubscribe?email=${email}>`,
-          },
-        });
-
-        console.log("Sent to:", email);
-
-        // ✅ IMPORTANT: 500ms delay = ~2 req/sec
-        await sleep(500);
-      } catch (err) {
-        console.error("Failed:", email, err);
-
-        // optional: still wait to avoid burst
-        await sleep(500);
-      }
-    }
-
-    // 4. Mark as sent
-    await prisma.newsletter.update({
-      where: { id: newsletter.id },
-      data: { sentAt: new Date() },
+    // 3. Add to queue (NOT sending here)
+    await emailQueue.add("send-newsletter", {
+      subject,
+      content,
+      emails: subscribers.map((s) => s.email),
+      newsletterId: newsletter.id,
     });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({
+      success: true,
+      message: "Newsletter queued 🚀",
+    });
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "Failed to send" }, { status: 500 });
+    return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
 }
