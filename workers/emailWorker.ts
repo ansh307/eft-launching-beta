@@ -17,9 +17,11 @@ new Worker(
   async (job) => {
     const { subject, content, emails, newsletterId } = job.data;
 
-    console.log("📨 Sending newsletter to", emails.length, "users");
+    let sentCount = 0;
 
-    for (const email of emails) {
+    for (let i = 0; i < emails.length; i++) {
+      const email = emails[i];
+
       try {
         await resend.emails.send({
           from: "EFT <onboarding@anshsoni55333.info>",
@@ -28,23 +30,31 @@ new Worker(
           html: content.replace("{{email}}", email),
         });
 
-        console.log("✅ Sent to:", email);
-
-        // rate limit safe
-        await sleep(500);
+        sentCount++;
+        console.log("✅ Sent:", email);
       } catch (err) {
         console.error("❌ Failed:", email, err);
-        await sleep(500);
       }
+
+      // ✅ progress update
+      await job.updateProgress(Math.round((i / emails.length) * 100));
+
+      // ✅ rate limit safe
+      await sleep(500);
     }
 
-    // mark as sent
+    // Optional: track partial success
     await prisma.newsletter.update({
       where: { id: newsletterId },
-      data: { sentAt: new Date() },
+      data: {
+        sentAt: new Date(),
+      },
     });
 
-    console.log("🎉 Newsletter completed");
+    return { sentCount };
   },
-  { connection }
+  {
+    connection,
+    concurrency: 1, // IMPORTANT (rate limit safety)
+  }
 );

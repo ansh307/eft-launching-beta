@@ -12,28 +12,44 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
 
-    // 1. Save newsletter
     const newsletter = await prisma.newsletter.create({
       data: { subject, content },
     });
 
-    // 2. Get subscribers
     const subscribers = await prisma.waitlist.findMany({
       where: { subscribed: true },
       select: { email: true },
     });
 
-    // 3. Add to queue (NOT sending here)
-    await emailQueue.add("send-newsletter", {
-      subject,
-      content,
-      emails: subscribers.map((s) => s.email),
-      newsletterId: newsletter.id,
-    });
+    const emails = subscribers.map((s) => s.email);
+
+    // 🔥 Split into chunks of 20
+    const chunkSize = 20;
+
+    for (let i = 0; i < emails.length; i += chunkSize) {
+      const chunk = emails.slice(i, i + chunkSize);
+
+      await emailQueue.add(
+        "send-newsletter",
+        {
+          subject,
+          content,
+          emails: chunk,
+          newsletterId: newsletter.id,
+        },
+        {
+          attempts: 3, // ✅ retry
+          backoff: {
+            type: "exponential",
+            delay: 2000,
+          },
+        }
+      );
+    }
 
     return NextResponse.json({
       success: true,
-      message: "Newsletter queued 🚀",
+      message: `Queued ${emails.length} emails 🚀`,
     });
   } catch (error) {
     console.error(error);
