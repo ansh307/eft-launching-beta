@@ -2,14 +2,34 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { useUser } from "@clerk/nextjs";
+
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "anshsoni55333@gmail.com";
 
 export default function NewsletterPage() {
+  const { user, isLoaded } = useUser();
+
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [previewMode, setPreviewMode] = useState<"desktop" | "mobile">(
     "desktop",
   );
+
+  // 🔐 Wait for Clerk to load
+  if (!isLoaded) return <div className="p-6">Loading...</div>;
+
+  // 🔐 Not logged in
+  if (!user) {
+    return <div className="p-6">Please sign in</div>;
+  }
+
+  const email = user.emailAddresses?.[0]?.emailAddress;
+
+  // 🔐 Not admin
+  if (email !== ADMIN_EMAIL) {
+    return <div className="p-6 text-red-500">Unauthorized</div>;
+  }
 
   const sendNewsletter = async () => {
     if (!subject || !content) {
@@ -41,7 +61,6 @@ export default function NewsletterPage() {
     }
   };
 
-  // ✅ NEW: Test email
   const sendTest = async () => {
     const email = prompt("Enter test email:");
     if (!email) return;
@@ -139,7 +158,7 @@ export default function NewsletterPage() {
           </div>
 
           <div
-            className="p-4 text-sm prose max-w-none text-gray-800 overflow-auto"
+            className="p-4 text-sm prose max-w-none overflow-auto"
             dangerouslySetInnerHTML={{
               __html: content || "<p style='color:gray'>No content yet...</p>",
             }}

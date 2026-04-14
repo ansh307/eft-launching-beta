@@ -3,9 +3,27 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { emailQueue } from "@/lib/queue";
+import { auth } from "@clerk/nextjs/server";
+import { currentUser } from "@clerk/nextjs/server";
+
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "anshsoni55333@gmail.com";
 
 export async function POST(req: Request) {
   try {
+    const { userId } = await auth();
+
+     if (!userId) {
+      return new Response("Unauthorized", { status: 401 });
+    }
+
+    const user = await currentUser();
+
+    const email = user?.emailAddresses?.[0]?.emailAddress;
+
+    if (email !== ADMIN_EMAIL) {
+      return new Response("Forbidden", { status: 403 });
+    }
+
     const { subject, content } = await req.json();
 
     if (!subject || !content) {
