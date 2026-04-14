@@ -7,6 +7,9 @@ export default function NewsletterPage() {
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
+  const [previewMode, setPreviewMode] = useState<"desktop" | "mobile">(
+    "desktop",
+  );
 
   const sendNewsletter = async () => {
     if (!subject || !content) {
@@ -31,10 +34,33 @@ export default function NewsletterPage() {
       } else {
         toast.error(data.error || "Something went wrong");
       }
-    } catch (err) {
+    } catch {
       toast.error("Network error");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // ✅ NEW: Test email
+  const sendTest = async () => {
+    const email = prompt("Enter test email:");
+    if (!email) return;
+
+    try {
+      const res = await fetch("/api/admin/newsletter/test", {
+        method: "POST",
+        body: JSON.stringify({ subject, content, email }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        toast.success("Test email sent ✉️");
+      } else {
+        toast.error("Failed to send test");
+      }
+    } catch {
+      toast.error("Test failed");
     }
   };
 
@@ -58,23 +84,56 @@ export default function NewsletterPage() {
           onChange={(e) => setContent(e.target.value)}
         />
 
-        <button
-          onClick={sendNewsletter}
-          className="bg-black text-white px-4 py-2 rounded-md w-full flex items-center justify-center gap-2"
-          disabled={loading}
-        >
-          {loading && (
-            <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
-          )}
-          {loading ? "Sending..." : "Send Newsletter"}
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={sendNewsletter}
+            className="bg-black text-white px-4 py-2 rounded-md flex-1 flex items-center justify-center gap-2"
+            disabled={loading}
+          >
+            {loading && (
+              <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+            )}
+            {loading ? "Sending..." : "Send"}
+          </button>
+
+          {/* ✅ NEW BUTTON */}
+          <button onClick={sendTest} className="border px-4 py-2 rounded-md">
+            Test
+          </button>
+        </div>
       </div>
 
       {/* RIGHT: Preview */}
       <div>
-        <h2 className="text-xl font-semibold mb-3">Email Preview</h2>
+        <div className="flex justify-between items-center mb-3">
+          <h2 className="text-xl font-semibold">Email Preview</h2>
 
-        <div className="border rounded-md bg- shadow-sm">
+          {/* ✅ NEW: Preview toggle */}
+          <div className="flex gap-2">
+            <button
+              onClick={() => setPreviewMode("desktop")}
+              className={`px-2 py-1 border rounded ${
+                previewMode === "desktop" ? "bg-black text-white" : ""
+              }`}
+            >
+              Desktop
+            </button>
+            <button
+              onClick={() => setPreviewMode("mobile")}
+              className={`px-2 py-1 border rounded ${
+                previewMode === "mobile" ? "bg-black text-white" : ""
+              }`}
+            >
+              Mobile
+            </button>
+          </div>
+        </div>
+
+        <div
+          className={`border rounded-md shadow-sm ${
+            previewMode === "mobile" ? "max-w-sm mx-auto" : ""
+          }`}
+        >
           <div className="border-b p-3 text-sm" style={{ color: "gray" }}>
             <strong>Subject:</strong> {subject || "(No subject)"}
           </div>
