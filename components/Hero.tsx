@@ -21,6 +21,7 @@ import {
 } from "@/lib/constants";
 import LiveSignupTicker from "./LiveSignupTicker";
 import { toast } from "sonner";
+import Image from "next/image";
 
 const Hero = () => {
   const [email, setEmail] = useState("");
@@ -85,11 +86,16 @@ const Hero = () => {
 
       {/* Header with Logo and FAQ */}
       <div className="absolute top-0 left-0 right-0 z-20 px-4 sm:px-6 md:px-8 py-4 md:py-6">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <div className="max-w-7xl mx-auto flex items-center justify-between  -translate-y-8">
           {/* Logo */}
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-wider">
-            {SITE_NAME}
-          </h1>
+          <Image
+            src="/eft-logo.png" // change to .png if needed
+            alt="EFT Logo"
+            width={180}
+            height={50}
+            className="h-20 sm:h-22 md:h-28 w-auto object-contain"
+            priority
+          />
 
           {/* FAQ Button */}
           <a
