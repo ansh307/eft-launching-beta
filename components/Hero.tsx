@@ -89,14 +89,14 @@ const Hero = () => {
         <div className="max-w-7xl mx-auto flex items-center justify-between  -translate-y-8">
           {/* Logo */}
           <Image
-            src="/eft-logo.png" // change to .png if needed
+            src="/eft-logo.png"
             alt="EFT Logo"
-            width={180}
-            height={50}
+            width={0}
+            height={0}
+            sizes="100vw"
             className="h-20 sm:h-22 md:h-28 w-auto object-contain"
             priority
           />
-
           {/* FAQ Button */}
           <a
             href="https://prop-help.vercel.app/"
