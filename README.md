@@ -39,7 +39,7 @@ ENV:
 
 # Connect to Supabase via connection pooling
 
-# DATABASE_URL="postgresql://postgres:JysLtQdcDvNQa7X2@db.mzmvgziulwbfrkwsasna.supabase.co:5432/postgres"
+# DATABASE_URL=sdada
 
 DATABASE_URL=Dadad
 
