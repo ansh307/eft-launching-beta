@@ -34,3 +34,29 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+ENV:
+
+# Connect to Supabase via connection pooling
+
+# DATABASE_URL="postgresql://postgres:JysLtQdcDvNQa7X2@db.mzmvgziulwbfrkwsasna.supabase.co:5432/postgres"
+
+DATABASE_URL=Dadad
+
+# Direct connection to the database. Used for migrations
+
+DIRECT_URL=asdasd
+
+NODE_ENV=dev
+
+RESEND_API_KEY=dadasd
+
+REDIS_URL=asdasda
+
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=asdasd
+CLERK_SECRET_KEY=sdasdasd
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/
+NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/
+
+ADMIN_EMAIL=sdadadasd
